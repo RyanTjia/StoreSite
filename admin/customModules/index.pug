@@ -1,0 +1,117 @@
+doctype html
+html
+
+	head
+		title Admin Use
+
+		meta(charset="utf-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1")
+
+		style.
+			.div-box {
+				border-style: solid;
+				border-width: 2px;
+				padding: 10px 20px;
+			}
+			.subtitle {
+				font-weight: bold;
+				text-decoration: underline;
+			}
+
+		script(src="/code/javascript.js")
+
+		<!--Bootstrap-->
+		link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css")
+		script(src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js")
+		script(src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
+		script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js")
+
+body
+	div(class="container-fluid")
+		div(class="row")
+			div(class="col-md-6 div-box")
+				form(class="form-horizontal" action="/addProduct" method="post")
+					div(class="subtitle") Product
+					div(class="row")
+						div(class="col-md-6")
+							label(class="control-label" for="item") Name
+							input(type="text" class="form-control" name="item" id="item" required)
+						div(class="col-md-6")
+							label(class="control-label" for="price") Price
+							input(type="number" class="form-control" step="0.01" min="0" name="price" id="price" required)
+					div(class="form-group")
+						label(class="control-label" for="desc") Description
+						input(type="textarea" class="form-control" name="desc" id="desc" required)
+					div(class="form-group")
+							label(class="control-label" for="category") Category
+							select(class="form-control" name="category" id="category")
+								option(value="produce") Produce
+								option(value="dairy") Dairy
+								option(value="meat") Meat
+					button(type="submit" class="btn btn-success") Add Product
+			div(class="col-md-6 div-box")
+				form(action="/addLocation" method="post")
+					div(class="subtitle") Location
+					div(class="form-group row")
+						div(class="col-md-4")
+							label(class="control-label" for="building") Building No.
+							input(type="number" class="form-control" name="building" id="building" required)
+						div(class="col-md-8")
+							label(class="control-label" for="address") Address
+							input(type="text" class="form-control" name="address" id="address" required)
+					div(class="form-group row")
+						div(class="col-md-6")
+							label(class="control-label" for="state") State
+							input(type="text" class="form-control" name="state" id="state" required)
+						div(class="col-md-6")
+							label(class="control-label" for="zipcode") Zipcode
+							input(type="number" class="form-control" name="zipcode" id="zipcode" required)
+					div(class="form-group row")
+						div(class="col-md-6")
+							label(class="control-label" for="beginTime") Start
+							input(type="time" class="form-control"  name="beginTime" id="beginTime" required)
+						div(class="col-md-6")
+							label(class="control-label" for="endTime") End
+							input(type="time" class="form-control"  name="endTime" id="endTime" required)
+					button(type="submit" class="btn btn-success") Add Location
+		div(class="row")
+			div(class="col-md-6 div-box")
+				form(action="/removeProduct" method="post")
+					div(class="subtitle") Product
+					div(class="form-group row")
+						div(class="col-md-6")
+							label(class="control-label" for="chosenItem") Name
+							select(class="form-control" name="chosenItem" id="chosenItem")
+								each item in product
+									option(value=item._id) #{item.product}
+						div(class="col-md-6")
+							label(class="control-label" for="availablePlace") Location
+							select(multiple class="form-control" name="availablePlace" id="availablePlace" required)
+					button(type="submit" class="btn btn-danger") Remove Product
+			div(class="col-md-6 div-box")
+				form(action="/removeLocation" method="post")
+					div(class="subtitle") Location
+					div(class="form-group")
+						select(class="form-control" name="location" id="location" required)
+							each place in location
+								option(value=place._id) #{place.number} #{place.address}, #{place.state}, #{place.zipcode}
+					button(type="submit" class="btn btn-danger") Remove Location
+		div(class="row")
+			div(class="col-md-12 div-box")
+				form(action="/linkProduct" method="post")
+					div(class="subtitle") Product in Store
+					div(class="form-group row")
+						div(class="col-md-6")
+							label(class="control-label" for="item") Name
+							select(class="form-control" name="item" id="item")
+								each item in product
+									option(value=item._id) #{item.product}
+						div(class="col-md-6")
+							label(class="control-label" for="amount") Amount
+							input(type="number" class="form-control" min="0" name="amount" id="amount" required)
+					div(class="form-group")
+						label(class="control-label" for="location") Location
+						select(class="form-control" name="location" id="location")
+							each place in location
+								option(value=place._id) #{place.number} #{place.address}, #{place.state}, #{place.zipcode}
+					button(type="submit" class="btn btn-success") Add Stock

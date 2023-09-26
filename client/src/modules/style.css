@@ -1,0 +1,22 @@
+.customBox {
+    border: 1px;
+}
+
+.navBar {
+    background-color: rgb(75, 75, 75);
+}
+
+.navBar button {
+    color: azure;
+}
+
+.cartParent {
+    position: relative;
+}
+
+#testing {
+    width: 1000px;
+    z-index: 10;
+    position: absolute;
+    left: 0%;
+}
