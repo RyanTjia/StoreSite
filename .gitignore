@@ -42,6 +42,10 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Specific files
+api/customModules/mongo.js
+admin/customModules/mongo.js
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
