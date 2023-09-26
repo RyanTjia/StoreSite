@@ -13,6 +13,63 @@ function gatherList() {
     return productsID;
 }
 
+const ChangeAmount = (props) => {
+    const value = props.value;
+    const [amount, setAmount] = useState(value.amount);
+    const totalPrice = value.price * amount;
+
+    function changeAmount(event) {
+        setAmount(event.target.value);
+    }
+
+    return (
+        <div className="row">
+            <div className="col-md-3">
+                ${Number(value.price).toFixed(2)}
+            </div>
+            <div className="col-md-1">
+                X
+            </div>
+            <div className="col-md-3">
+                <input className='form-control'
+                    type="number"
+                    min={1} step={1}
+                    value={amount}
+                    onChange={changeAmount}
+                />
+            </div>
+            <div className="col-md-1">
+                =
+            </div>
+            <div className="col-md-4">
+                ${totalPrice.toFixed(2)}
+            </div>
+        </div>
+    )
+}
+
+const CartProduct = (props) => {
+    const item = props.value;
+
+    return (
+        <div className="row">
+            <div className="col-md-6">
+                <img alt="Placeholder here" className="img-responsive"/>
+            </div>
+            <div className="col-md-6">
+                <div className="row">
+                    <Link to='../done' state={{id: item._id}}>
+                        <div className="col-md-12">
+                            <h1>{item.product}</h1>
+                        </div>
+                    </Link>
+                </div>
+                <ChangeAmount value={item}/>
+            </div>
+        </div>
+    )
+}
+
 function buildResponse(data) {
     const modifiedArray = data.map((element) => {
         const value = element.value;
@@ -31,25 +88,7 @@ function buildResponse(data) {
         else {
             return (
                 <div className='list-group-item' key={value._id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <img alt="Placeholder here" className="img-responsive"/>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <Link to='../done' state={{id: value._id}}>
-                                        <h1>{value.product}</h1>
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-md-12">
-                                    ${Number(value.price).toFixed(2)} X {value.amount}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <CartProduct value={value}/>
                 </div>
             )
         }
@@ -57,8 +96,6 @@ function buildResponse(data) {
 
     return modifiedArray;
 }
-//Must return a list of queried items
-//Each item is a different query
 
 const Cart = () => {
 	const [list, setList] = useState(<div className="col-md-12">Loading...</div>);
@@ -84,17 +121,6 @@ const Cart = () => {
             console.log(error);
 			setList(<h3 className="col-md-12">Connection not established, please try again later</h3>);
 		})
-
-		/*fetch.then((response) => {
-			const newArray = buildResponse(response);
-			
-			if (newArray.length > 0) {
-				setQuery(newArray);
-			}
-			else {
-				setQuery(<h3 className="col-md-12">Whoops! Cannot find it</h3>);
-			}
-		})*/
 	}, []);
 
 	return (

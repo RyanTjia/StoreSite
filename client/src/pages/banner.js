@@ -40,10 +40,6 @@ const CartButton = () => {
 		}
 	}
 
-	/*function checkCart() {
-		console.log(JSON.parse(localStorage.cart));
-	}*/
-
 	return (
 		<span className="cartParent">
 			<button className="cart btn" onClick={checkCart}>

@@ -12,13 +12,13 @@ function buildResponse(data) {
 						<img alt="Placeholder here" className="img-responsive"/>
 					</div>
 				</div>
-				<Link to='../done' state={{id: element['_id']}}>
-					<div className="row">
+				<div className="row">
+					<Link to='../done' state={{id: element['_id']}}>
 						<div className="col-md-12">
 							<b>{element['product']} - ${Number(element['price']).toFixed(2)}</b>
 						</div>
-					</div>
-				</Link>
+					</Link>
+				</div>
 			</div>
 		)
 	});
