@@ -5,6 +5,53 @@ import {getSingleQuery} from "../../modules/fetchRequest";
 
 const GlobalContext = createContext();
 
+const Locations = () => {
+    const item = useContext(GlobalContext);
+    console.log(item);
+    return (
+        <div></div>
+    )
+}
+
+const Description = () => {
+    const item = useContext(GlobalContext);
+
+    return (
+        <>
+            <b>Description:</b> {item.description}
+        </>
+    )
+}
+
+const ExtraDetails = () => {
+    const [tab, setTab] = useState(<Description/>);
+
+    function pickTab(number) {
+        switch (number) {
+            case 1:
+                setTab(<Locations/>);
+                break;
+            case 0:
+                setTab(<Description/>);
+                break;
+        }
+    }
+
+    return (
+        <>
+            <div className="row">
+                <div className="col-md-6 tab" onClick={() => pickTab(0)}>Description</div>
+                <div className="col-md-6 tab" onClick={() => pickTab(1)}>Available In</div>
+            </div>
+            <div className="row">
+                <div className="col-md-12" style={{border: "1px solid black", backgroundColor: "beige"}}>
+                    {tab}
+                </div>
+            </div>
+        </>
+    )
+}
+
 const AddToCart = () => {
     const item = useContext(GlobalContext);
     const [amount, setAmount] = useState(1);
@@ -97,11 +144,7 @@ const ProductInfo = () => {
                     <AddToCart/>
                 </div>
             </div>
-            <div className="row">
-                <div className="col-md-12">
-                    <b>Description:</b> {item.description}
-                </div>
-            </div>
+            <ExtraDetails/>
         </>
     );
 }

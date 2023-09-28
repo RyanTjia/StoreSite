@@ -21,19 +21,23 @@ function parseProducts() {
 		});
 	}
 
-	const cartView = <Link to = "/cart" key="view"><button className="btn">View Cart</button></Link>
-	newArray.push(cartView);
-
 	return newArray;
 }
 
 const CartButton = () => {
 	const [list, setList] = useState("");
 
+	function closeCart() {
+		setList("");
+	}
+
 	function checkCart() {
 		if (list === "") {
-			const cartList = <div className="col-md-12 list-group" id="testing">{parseProducts()}</div>;
-			setList(cartList);
+			const cartList = parseProducts();
+			cartList.push(<Link to = "/cart" key="view"><button className="btn" onClick={closeCart}>View Cart</button></Link>);
+
+			const cart = <div className="col-md-12 list-group" id="testing">{cartList}</div>;
+			setList(cart);
 		}
 		else {
 			setList("");
