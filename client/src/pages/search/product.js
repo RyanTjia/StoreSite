@@ -1,15 +1,57 @@
 import {useState, useEffect, useContext, createContext} from "react";
 import {useLocation} from "react-router-dom";
 
-import {getSingleQuery} from "../../modules/fetchRequest";
+import {getSingleQuery, getLocationsOfProduct} from "../../modules/fetchRequest";
 
 const GlobalContext = createContext();
 
+function parseLocations(data) {
+	const modifiedArray = data.map((element) => {
+		return (
+			<div className='list-group-item' key = {element['_id']}>
+				<div className="row">
+					<div className="col-md-12">
+						<b>{element['number']} {element['address']}</b>, {element['state']}, {element['zipcode']}
+					</div>
+				</div>
+				<div className="row">
+					<div className="col-md-12">
+						{element['stock']} in stock
+					</div>
+				</div>
+			</div>
+		)
+	});
+
+    return modifiedArray;
+}
+
 const Locations = () => {
     const item = useContext(GlobalContext);
-    console.log(item);
+    const [locations, setLocations] = useState(<div className="col-md-12">Loading...</div>);
+    
+    useEffect(() => {
+		const fetch = getLocationsOfProduct(item._id);
+
+		fetch.then((response) => {
+            const newArray = parseLocations(response);
+
+            if (newArray.length > 0) {
+				setLocations(newArray);
+			}
+			else {
+				setLocations(<h3 className="col-md-12">This item is not available in-store</h3>);
+			}
+		})
+        .catch(() => {
+			setLocations(<h3 className="col-md-12">Connection not established, please try again later</h3>);
+		})
+	}, [item.id]);
+
     return (
-        <div></div>
+        <>
+            {locations}
+        </>
     )
 }
 
@@ -31,7 +73,7 @@ const ExtraDetails = () => {
             case 1:
                 setTab(<Locations/>);
                 break;
-            case 0:
+            default:
                 setTab(<Description/>);
                 break;
         }

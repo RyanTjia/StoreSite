@@ -14,9 +14,6 @@ function getAllQueryByFilter(querySearch, requestType) {
 	.then((response) => {
 		return response.json();
 	})
-	.then((array) => {
-		return array;
-	})
 	.catch((error) => {
 		console.log(error);
 	})
@@ -36,16 +33,13 @@ function getSingleQuery(id, requestType) {
 	.then((response) => {
 		return response.json();
 	})
-	.then((array) => {
-		return array[0];
-	})
 	.catch((error) => {
 		console.log(error);
 	})
 }
 
-function getCartQuery(id, requestType, amount) {
-	return fetch(fetchUrl + `/get${requestType}`, {
+function getLocationsOfProduct(id) {
+	return fetch(fetchUrl + '/getLocationsByProduct', {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/json',
@@ -58,8 +52,24 @@ function getCartQuery(id, requestType, amount) {
 	.then((response) => {
 		return response.json();
 	})
-	.then((array) => {
-		return array[0];
+	.catch((error) => {
+		console.log(error);
+	})
+}
+
+function getCartQuery(id, amount) {
+	return fetch(fetchUrl + '/getProduct', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			'_id': id
+		})
+	})
+	.then((response) => {
+		return response.json();
 	})
 	.then((query) => {
 		query.amount = amount;
@@ -70,4 +80,4 @@ function getCartQuery(id, requestType, amount) {
 	})
 }
 
-export {getAllQueryByFilter, getSingleQuery, getCartQuery};
+export {getAllQueryByFilter, getSingleQuery, getLocationsOfProduct, getCartQuery};

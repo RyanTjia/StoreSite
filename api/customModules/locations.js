@@ -1,4 +1,4 @@
-const {database} = require("./mongo.js");
+const {database, objectId} = require("./mongo.js");
 
 const collection = database.collection("Locations");
 const fieldLimit = {_id: 1, number: 1, address: 1, state: 1, zipcode: 1};
@@ -80,12 +80,55 @@ async function getAllLocationsByFilter(search) {
 	}
 }
 
+async function getLocation(_id) {
+	const fieldLimit = {_id: 0, number: 1, address: 1, state: 1, zipcode: 1, beginTime: 1, endTime: 1};
+	
+	try {
+		const result = collection.find({_id: objectId(_id)}).project(fieldLimit);
+		
+		for await (const query of result) {
+			return query;
+		}
+	}
+	catch(error) {
+		console.log(error);
+	}
+}
+
+async function getAllLocationsByProduct(productId) {
+	const relationalDB = database.collection("ProductInStore");
+	const field = {_id: 0, locationID: 1, stock: 1};
+	const dataArray = [];
+
+	try {
+		const result = relationalDB.find({productID: productId}).project(field);
+
+		for await (const query of result) {
+			const stores = collection.find({_id: objectId(query.locationID)}).project(fieldLimit);
+
+			for await (const store of stores) {
+				store.stock = query.stock;
+				dataArray.push(store);
+			}
+		}
+		return dataArray;
+	}
+	catch(error) {
+		console.log(error);
+	}
+}
+
+//==========================================================================
+
 //Export as a json object
 module.exports = {
 	getAllLocations: () => {
 		return getAllLocations();
 	},
 	getAllLocationsByFilter: (search) => {
-		return getAllLocationsByFilter(search)
+		return getAllLocationsByFilter(search);
+	},
+	getAllLocationsByProduct: (productId) => {
+		return getAllLocationsByProduct(productId);
 	}
 }

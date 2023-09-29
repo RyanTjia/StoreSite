@@ -36,4 +36,13 @@ router.post('/getLocationsByFilter', (req, res) => {
 	});
 });
 
+router.post('/getLocationsByProduct', (req, res) => {
+	const {_id} = req.body;
+
+	var test = locationCRUD.getAllLocationsByProduct(_id);
+	test.then((response) => {
+		res.json(response);
+	});
+});
+
 module.exports = router;

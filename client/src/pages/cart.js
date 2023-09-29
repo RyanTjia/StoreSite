@@ -103,7 +103,7 @@ const Cart = () => {
 	useEffect(() => {
         const currentList = gatherList();
         const fetches = currentList.map((product) => {
-            return getCartQuery(product[0], 'Product', product[1]);
+            return getCartQuery(product[0], product[1]);
         });
         console.log(fetches)
 
