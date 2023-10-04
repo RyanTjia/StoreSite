@@ -17,20 +17,26 @@ import Location from "./pages/search/location";
 //Importing custom CSS
 import "./modules/style.css";
 
+//React query for efficiency
+import {QueryClient, QueryClientProvider} from "react-query";
+const queryClient = new QueryClient();
+
 export default function App() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path = "/" element = {<Banner/>}>
-					<Route index element = {<Home/>}/>
-					<Route path = "inventory" element = {<Inventory/>}/>
-					<Route path = "done" element = {<Product/>}/>
-					<Route path = "locations" element = {<Location/>}/>
-					<Route path = "cart" element = {<Cart/>}/>
-				</Route>
-				<Route path = "*" element = {<Navigate to = "/" replace = {true}/>}/>
-			</Routes>
-		</BrowserRouter>
+		<QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+				<Routes>
+					<Route path = "/" element = {<Banner/>}>
+						<Route index element = {<Home/>}/>
+						<Route path = "inventory" element = {<Inventory/>}/>
+						<Route path = "done" element = {<Product/>}/>
+						<Route path = "locations" element = {<Location/>}/>
+						<Route path = "cart" element = {<Cart/>}/>
+					</Route>
+					<Route path = "*" element = {<Navigate to = "/" replace = {true}/>}/>
+				</Routes>
+			</BrowserRouter>
+        </QueryClientProvider>
 	);
 }
 

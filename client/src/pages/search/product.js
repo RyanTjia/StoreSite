@@ -1,56 +1,37 @@
-import {useState, useEffect, useContext, createContext} from "react";
+import {useState, useContext, createContext} from "react";
+import {useQuery} from "react-query";
 import {useLocation} from "react-router-dom";
 
 import {getSingleQuery, getLocationsOfProduct} from "../../modules/fetchRequest";
 
 const GlobalContext = createContext();
 
-function parseLocations(data) {
-	const modifiedArray = data.map((element) => {
-		return (
-			<div className='list-group-item' key = {element['_id']}>
-				<div className="row">
-					<div className="col-md-12">
-						<b>{element['number']} {element['address']}</b>, {element['state']}, {element['zipcode']}
-					</div>
-				</div>
-				<div className="row">
-					<div className="col-md-12">
-						{element['stock']} in stock
-					</div>
-				</div>
-			</div>
-		)
-	});
-
-    return modifiedArray;
-}
-
 const Locations = () => {
     const item = useContext(GlobalContext);
-    const [locations, setLocations] = useState(<div className="col-md-12">Loading...</div>);
+    const {data, status} = useQuery("locations", () => getLocationsOfProduct(item._id));
     
-    useEffect(() => {
-		const fetch = getLocationsOfProduct(item._id);
-
-		fetch.then((response) => {
-            const newArray = parseLocations(response);
-
-            if (newArray.length > 0) {
-				setLocations(newArray);
-			}
-			else {
-				setLocations(<h3 className="col-md-12">This item is not available in-store</h3>);
-			}
-		})
-        .catch(() => {
-			setLocations(<h3 className="col-md-12">Connection not established, please try again later</h3>);
-		})
-	}, [item.id]);
-
     return (
         <>
-            {locations}
+            {status === "error" && <h3 className="col-md-12">Connection not established, please try again later</h3>}
+            {status === "loading" && <div className="col-md-12">Loading...</div>}
+            {status === "success" && (
+                <div className="col-md-12 list-group">
+                    {data.map((element) => (
+                        <div className='list-group-item' key = {element['_id']}>
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <b>{element['number']} {element['address']}</b>, {element['state']}, {element['zipcode']}
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-md-12">
+                                    {element['stock']} in stock
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </>
     )
 }
@@ -193,28 +174,18 @@ const ProductInfo = () => {
 
 const Product = () => {
     const {state} = useLocation();
-    const [product, setProduct] = useState(<div className="col-md-12">Loading...</div>);
-
-	useEffect(() => {
-		const fetch = getSingleQuery(state.id, 'Product');
-
-		fetch.then((response) => {
-            const parsedData = (
-                <GlobalContext.Provider value={response}>
-                    <ProductInfo/>
-                </GlobalContext.Provider>
-            )
-            setProduct(parsedData);
-		})
-        .catch(() => {
-			setProduct(<h3 className="col-md-12">Connection not established, please try again later</h3>);
-		})
-	}, [state]);
+    const {data, status} = useQuery("product", () => getSingleQuery(state.id, 'Product'));
 
     return (
         <div className="row">
             <div className="col-md-10 mx-auto">
-                {product}
+                {status === "error" && <h3 className="col-md-12">Connection not established, please try again later</h3>}
+                {status === "loading" && <div className="col-md-12">Loading...</div>}
+                {status === "success" && (
+                    <GlobalContext.Provider value={data}>
+                        <ProductInfo/>
+                    </GlobalContext.Provider>
+                )}
             </div>
         </div>
     )
