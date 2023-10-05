@@ -1,53 +1,40 @@
-import {useState, useEffect} from "react";
-
+import {useState} from "react";
+import {useQuery} from "react-query";
 import {getAllQueryByFilter} from "../../modules/fetchRequest";
 
-function buildResponse(data) {
-	const modifiedArray = data.map((element) => {
-		return (
-			<div className='list-group-item' key = {element['_id']}>
-				<div className="row">
-					<div className="col-md-12">
-						<b>{element['number']} {element['address']}</b>
+function parseLocations(array) {
+	if (array.length === 0) {
+		return <h3 className="col-md-12">Whoops! Cannot find it</h3>
+	}
+	return (
+		<div className="col-md-12 list-group">
+            {array.map((element) => (
+				<div className='list-group-item' key = {element['_id']}>
+					<div className="row">
+						<div className="col-md-12">
+							<b>{element['number']} {element['address']}</b>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col-md-12">
+							{element['state']}, {element['zipcode']}
+						</div>
 					</div>
 				</div>
-				<div className="row">
-					<div className="col-md-12">
-						{element['state']}, {element['zipcode']}
-					</div>
-				</div>
-			</div>
-		)
-	});
-
-    return modifiedArray;
+			))}
+        </div>
+	)
 }
 
 const Result = (props) => {
-	const [query, setQuery] = useState(<div className="col-md-12">Loading...</div>);
-
-	useEffect(() => {
-		const fetch = getAllQueryByFilter(props.data, 'Locations');
-
-		fetch.then((response) => {
-			const newArray = buildResponse(response);
-			
-			if (newArray.length > 0) {
-				setQuery(newArray);
-			}
-			else {
-				setQuery(<h3 className="col-md-12">Whoops! Cannot find it</h3>);
-			}
-		})
-		.catch(() => {
-			setQuery(<h3 className="col-md-12">Connection not established, please try again later</h3>);
-		})
-	}, [props.data]);
+	const {data, status} = useQuery(["inventory", props.data], () => getAllQueryByFilter(props.data, 'Locations'));
 
 	return (
-		<div className="col-md-12 list-group">
-			{query}
-		</div>
+		<>
+			{status === "error" && <h3 className="col-md-12">Connection not established, please try again later</h3>}
+            {status === "loading" && <div className="col-md-12">Loading...</div>}
+            {status === "success" && (parseLocations(data))}
+		</>
 	)
 }
 

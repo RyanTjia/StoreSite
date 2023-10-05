@@ -1,56 +1,44 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
+import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 
 import {getAllQueryByFilter} from "../../modules/fetchRequest";
 
-function buildResponse(data) {
-	const modifiedArray = data.map((element) => {
-		return (
-			<div className='list-group-item' key = {element['_id']}>
-				<div className="row">
-					<div className="col-md-12">
-						<img alt="Placeholder here" className="img-responsive"/>
+function parseProducts(array) {
+	if (array.length === 0) {
+		return <h3 className="col-md-12">Whoops! Cannot find it</h3>
+	}
+	return (
+		<div className="col-md-12 list-group">
+            {array.map((element) => (
+				<div className='list-group-item' key = {element['_id']}>
+					<div className="row">
+						<div className="col-md-12">
+							<img alt="Placeholder here" className="img-responsive"/>
+						</div>
+					</div>
+					<div className="row">
+						<Link to='../done' state={{id: element['_id']}}>
+							<div className="col-md-12">
+								<b>{element['product']} - ${Number(element['price']).toFixed(2)}</b>
+							</div>
+						</Link>
 					</div>
 				</div>
-				<div className="row">
-					<Link to='../done' state={{id: element['_id']}}>
-						<div className="col-md-12">
-							<b>{element['product']} - ${Number(element['price']).toFixed(2)}</b>
-						</div>
-					</Link>
-				</div>
-			</div>
-		)
-	});
-
-    return modifiedArray;
+			))}
+        </div>
+	)
 }
 
 const Result = (props) => {
-	const [query, setQuery] = useState(<div className="col-md-12">Loading...</div>);
-
-	useEffect(() => {
-		const fetch = getAllQueryByFilter(props.data, 'Inventories');
-
-		fetch.then((response) => {
-			const newArray = buildResponse(response);
-			
-			if (newArray.length > 0) {
-				setQuery(newArray);
-			}
-			else {
-				setQuery(<h3 className="col-md-12">Whoops! Cannot find it</h3>);
-			}
-		})
-		.catch(() => {
-			setQuery(<h3 className="col-md-12">Connection not established, please try again later</h3>);
-		})
-	}, [props.data]);
+	const {data, status} = useQuery(["inventory", props.data], () => getAllQueryByFilter(props.data, 'Inventories'));
 
 	return (
-		<div className="col-md-12 list-group">
-			{query}
-		</div>
+		<>
+			{status === "error" && <h3 className="col-md-12">Connection not established, please try again later</h3>}
+            {status === "loading" && <div className="col-md-12">Loading...</div>}
+            {status === "success" && (parseProducts(data))}
+		</>
 	)
 }
 

@@ -14,9 +14,6 @@ function getAllQueryByFilter(querySearch, requestType) {
 	.then((response) => {
 		return response.json();
 	})
-	.catch((error) => {
-		console.log(error);
-	})
 }
 
 function getSingleQuery(id, requestType) {
@@ -33,9 +30,6 @@ function getSingleQuery(id, requestType) {
 	.then((response) => {
 		return response.json();
 	})
-	.catch((error) => {
-		console.log(error);
-	})
 }
 
 function getLocationsOfProduct(id) {
@@ -51,9 +45,6 @@ function getLocationsOfProduct(id) {
 	})
 	.then((response) => {
 		return response.json();
-	})
-	.catch((error) => {
-		console.log(error);
 	})
 }
 
@@ -74,9 +65,6 @@ function getCartQuery(id, amount) {
 	.then((query) => {
 		query.amount = amount;
 		return query
-	})
-	.catch((error) => {
-		console.log(error);
 	})
 }
 

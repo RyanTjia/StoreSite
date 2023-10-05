@@ -102,9 +102,9 @@ const Cart = () => {
 
 	useEffect(() => {
         const currentList = gatherList();
-        const fetches = currentList.map((product) => {
-            return getCartQuery(product[0], product[1]);
-        });
+        const fetches = currentList.map((product) => (
+            getCartQuery(product[0], product[1])
+        ));
         console.log(fetches)
 
         Promise.allSettled(fetches).then((product) => {

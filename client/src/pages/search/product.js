@@ -47,28 +47,18 @@ const Description = () => {
 }
 
 const ExtraDetails = () => {
-    const [tab, setTab] = useState(<Description/>);
-
-    function pickTab(number) {
-        switch (number) {
-            case 1:
-                setTab(<Locations/>);
-                break;
-            default:
-                setTab(<Description/>);
-                break;
-        }
-    }
-
+    const [tab, setTab] = useState(1);
+    
     return (
         <>
             <div className="row">
-                <div className="col-md-6 tab" onClick={() => pickTab(0)}>Description</div>
-                <div className="col-md-6 tab" onClick={() => pickTab(1)}>Available In</div>
+                <div className="col-md-6 tab" onClick={() => setTab(1)}>Description</div>
+                <div className="col-md-6 tab" onClick={() => setTab(2)}>Available In</div>
             </div>
             <div className="row">
                 <div className="col-md-12" style={{border: "1px solid black", backgroundColor: "beige"}}>
-                    {tab}
+                    {tab === 1 && <Description/>}
+                    {tab === 2 && <Locations/>}
                 </div>
             </div>
         </>
