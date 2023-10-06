@@ -46,13 +46,13 @@ async function getAllProductsByFilter(search) {
 
 async function getProduct(_id) {
 	const fieldLimit = {_id: 1, product: 1, price: 1, description: 1, category: 1};
-	
+
 	try {
 		const result = collection.find({_id: objectId(_id)}).project(fieldLimit);
-		
 		for await (const query of result) {
 			return query;
 		}
+		return [];
 	}
 	catch(error) {
 		console.log(error);

@@ -139,6 +139,10 @@ const AddToCart = () => {
 const ProductInfo = () => {
     const item = useContext(GlobalContext);
 
+    //This is a failsafe, for when the fetch is a success but the product is not there
+    if (item.length === 0) {
+        return <h3 className="col-md-12">Whoops! Cannot find it</h3>
+    }
     return (
         <>
             <div className='row'>

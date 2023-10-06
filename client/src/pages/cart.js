@@ -1,4 +1,5 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
+import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 
 import {getCartQuery} from "../modules/fetchRequest";
@@ -49,8 +50,12 @@ const ChangeAmount = (props) => {
 }
 
 const CartProduct = (props) => {
-    const item = props.value;
+    const data = props.data;
 
+    //This is a failsafe, for when the fetch is a success but the product is not there
+    if (data.length === 0) {
+        return <b>Error! Unable to retrieve product!</b>
+    }
     return (
         <div className="row">
             <div className="col-md-6">
@@ -58,74 +63,41 @@ const CartProduct = (props) => {
             </div>
             <div className="col-md-6">
                 <div className="row">
-                    <Link to='../done' state={{id: item._id}}>
+                    <Link to='../done' state={{id: data._id}}>
                         <div className="col-md-12">
-                            <h1>{item.product}</h1>
+                            <h1>{data.product}</h1>
                         </div>
                     </Link>
                 </div>
-                <ChangeAmount value={item}/>
+                <ChangeAmount value={data}/>
             </div>
         </div>
     )
 }
 
-function buildResponse(data) {
-    const modifiedArray = data.map((element) => {
-        const value = element.value;
+const Fetcher = (props) => {
+    const info = props.product;
+    const {data, status} = useQuery(info[0], () => getCartQuery(info[0], info[1]));
 
-        if (value === undefined) {
-            return (
-                <div className="list-group-item" key={data.indexOf(element)}>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <b>Error! Unable to retrieve product!</b>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div className='list-group-item' key={value._id}>
-                    <CartProduct value={value}/>
-                </div>
-            )
-        }
-    });
-
-    return modifiedArray;
+    return (
+        <>
+            {status === "error" && <h3 className="col-md-12">Connection not established, please try again later</h3>}
+            {status === "loading" && <div className="col-md-12">Loading...</div>}
+            {status === "success" && <CartProduct data={data}/>}
+        </>
+    )
 }
 
 const Cart = () => {
-	const [list, setList] = useState(<div className="col-md-12">Loading...</div>);
-
-	useEffect(() => {
-        const currentList = gatherList();
-        const fetches = currentList.map((product) => (
-            getCartQuery(product[0], product[1])
-        ));
-        console.log(fetches)
-
-        Promise.allSettled(fetches).then((product) => {
-            const newArray = buildResponse(product);
-
-            if (newArray.length > 0) {
-				setList(newArray);
-			}
-			else {
-				setList(<h3 className="col-md-12">Whoops! Cannot find it</h3>);
-			}
-        })
-		.catch((error) => {
-            console.log(error);
-			setList(<h3 className="col-md-12">Connection not established, please try again later</h3>);
-		})
-	}, []);
+    const savedCart = gatherList();
 
 	return (
 		<div className="col-md-12 list-group">
-			{list}
+            {savedCart.map((product) => (
+                <div className="list-group-item" key={product[0]}>
+                    <Fetcher product={product}/>
+                </div>
+            ))}
 		</div>
 	)
 }
