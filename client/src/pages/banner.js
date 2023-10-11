@@ -55,7 +55,6 @@ const CartButton = () => {
 };
 
 const Banner = () => {
-	const [input, setInput] = useState({type: 'inventory'});
 
 	//==========================================================================================
 	//Rendering

@@ -1,8 +1,10 @@
-import {useState} from "react";
+import {useState, useContext, createContext, useRef} from "react";
 import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 
 import {getCartQuery} from "../modules/fetchRequest";
+
+const GlobalContext = createContext();
 
 //Returns only the id & amount of each product
 function gatherList() {
@@ -14,10 +16,38 @@ function gatherList() {
     return productsID;
 }
 
+const SubmitOrder = () => {
+    const [test, setTest] = useState({});
+    const globalFunction = useContext(GlobalContext);
+
+    globalFunction.current = (key, value) => {
+        const tempMap = JSON.parse(JSON.stringify(test));
+        tempMap[key] = value;
+        console.log(tempMap);
+
+        setTest(tempMap);
+    };
+
+    const costArray = Object.values(test);
+    const total = costArray.reduce((sum, currentValue) => sum + currentValue, 0);
+
+    return (
+        <div className="row">
+            <div className="col-md-12">
+                <button className="btn btn-info">Check Total</button>
+                <span>${total.toFixed(2)}</span>
+            </div>
+        </div>
+    )
+}
+
 const ChangeAmount = (props) => {
     const value = props.value;
     const [amount, setAmount] = useState(value.amount);
     const totalPrice = value.price * amount;
+
+    const siblingFunction = useContext(GlobalContext);
+    siblingFunction.current(value._id, totalPrice);
 
     function changeAmount(event) {
         setAmount(event.target.value);
@@ -90,15 +120,21 @@ const Fetcher = (props) => {
 
 const Cart = () => {
     const savedCart = gatherList();
+    const sharedFunction = useRef();
 
 	return (
-		<div className="col-md-12 list-group">
-            {savedCart.map((product) => (
-                <div className="list-group-item" key={product[0]}>
-                    <Fetcher product={product}/>
+        <GlobalContext.Provider value={sharedFunction}>
+            <div className="row">
+                <div className="col-md-12 list-group">
+                    {savedCart.map((product) => (
+                        <div className="list-group-item" key={product[0]}>
+                            <Fetcher product={product}/>
+                        </div>
+                    ))}
                 </div>
-            ))}
-		</div>
+            </div>
+            <SubmitOrder/>
+        </GlobalContext.Provider>
 	)
 }
 
