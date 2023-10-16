@@ -5,6 +5,7 @@ import {Link} from "react-router-dom";
 import {getCartQuery} from "../modules/fetchRequest";
 
 const GlobalContext = createContext();
+const globalTotal = {};
 
 //Returns only the id & amount of each product
 function gatherList() {
@@ -17,18 +18,15 @@ function gatherList() {
 }
 
 const SubmitOrder = () => {
-    const [test, setTest] = useState({});
+    const [test, setTest] = useState(0);
     const globalFunction = useContext(GlobalContext);
 
-    globalFunction.current = (key, value) => {
-        const tempMap = JSON.parse(JSON.stringify(test));
-        tempMap[key] = value;
-        console.log(tempMap);
-
-        setTest(tempMap);
+    globalFunction.current = () => {
+        const tick = Math.random();
+        setTimeout(() => setTest(tick), 250);
     };
 
-    const costArray = Object.values(test);
+    const costArray = Object.values(globalTotal);
     const total = costArray.reduce((sum, currentValue) => sum + currentValue, 0);
 
     return (
@@ -47,7 +45,8 @@ const ChangeAmount = (props) => {
     const totalPrice = value.price * amount;
 
     const siblingFunction = useContext(GlobalContext);
-    siblingFunction.current(value._id, totalPrice);
+    globalTotal[value._id] = totalPrice;
+    siblingFunction.current();
 
     function changeAmount(event) {
         setAmount(event.target.value);
